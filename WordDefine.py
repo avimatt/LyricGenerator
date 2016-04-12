@@ -9,6 +9,8 @@ Currently generates
 
 """
 import nltk, os, sys, string, operator, random, ConditionalProbabilities
+from nltk.corpus import wordnet as wn
+from sets import Set
 try:
 	import Queue as Q
 except:
@@ -31,9 +33,35 @@ def create_sentence_probs(sentenceStructures, sentenceStrctureBigram):
 		probs.setdefault(prevBi, Q.PriorityQueue())
 		probs[prevBi].put(WordProb(curProb, curBi))
 	return probs
-
+def print_song(conditionalProbs, typeWordDict, sentenceStrctureProbs):
+	print "----------"
+	n = 0
+	string = ""
+	typestring = ""
+	prev_word = "<start>"
+	sent = "PRP VBP NN"
+	try:
+		while n < 10:
+			typestring += sent + "\n"
+			ss = sent.split()
+			for tag in ss:
+				new_word = conditionalProbs[prev_word].get().word
+				while new_word not in typeWordDict[tag]:
+					new_word = conditionalProbs[prev_word].get_nowait().word
+				string += " " + new_word 
+				prev_word = new_word
+			sent = sentenceStrctureProbs[sent].get_nowait().word
+			string += "\n"
+			n += 1
+	except:
+		print string
+		print typestring
+		exit(1)
+	print string
+	print typestring
 def main():
 	path = sys.argv[1]
+	unigrams = {}
 	songLength = {}
 	lineLength = {}
 	typeWordDict = {} #key: word type, value: dictionary (key: word, value: word count)
@@ -50,30 +78,28 @@ def main():
 		with open(path + "/" + filename, 'r') as myfile:
 			songLines = myfile.readlines()
 			songList.append(songLines)
-			if len(songLines) not in songLength:
-				songLength[len(songLines)] = 1
-			else:
-				songLength[len(songLines)] += 1
-	#read through each line and get tags
+			songLength.setdefault(len(songLines),0)
+			songLength[len(songLines)] += 1
 	for song in songList:
+		#read through each line to get tag for each words
 		for line in song:
 			lineStructure = "" #string of all tags to see if same sentence structure repeats itself
 			try:
 				tagged = nltk.pos_tag(nltk.word_tokenize(line)) #tokenize line then get word tag for each word
 			except:
 				continue
-			if len(tagged) not in lineLength:
-				lineLength[len(tagged)] = 1
-			else:
-				lineLength[len(tagged)] += 1
-			for pair in tagged:
+			#lineLength.setdefault(len(tagged),0)
+			#lineLength[len(tagged)] += 1
+			for pair in tagged: #pair = (word, tag)
 				if len(pair) == 2:
 					(word, tag) = pair
 					if word.isalpha() and tag.isalpha(): #will take out punctuation and song titles
 						lineStructure += tag + " "
-						typeWordDict.setdefault(tag, {}) #create key for tag with word if doesnt exist
-						typeWordDict[tag].setdefault(word, 0) #push word into tag dict if doesnt exist
-						typeWordDict[tag][word] += 1
+						typeWordDict.setdefault(tag, set()) #create key for tag with word if doesnt exist
+						typeWordDict[tag].add(word)
+						unigrams.setdefault(word, 0)
+						unigrams[word] += 1
+			# Create sentence structure, bigram dictionaries
 			lineStructure = lineStructure[:-1]
 			sentenceStructures.setdefault(lineStructure,0) 
 			sentenceStructures[lineStructure] += 1
@@ -86,28 +112,8 @@ def main():
 	sorted_ss = sorted(sentenceStructures.items(), key=operator.itemgetter(1)) #to see most popular sentence types and line lengths
 	sentenceStrctureProbs = create_sentence_probs(sentenceStructures, sentenceStrctureBigram)
 	unigrams, bigrams = ConditionalProbabilities.getCounts(path)
-	conditionalProbs = ConditionalProbabilities.getProbabilities(unigrams, bigrams)
-	print "----------"
-	n = 0
-	string = ""
-	prev_word = "<start>"
-	sent = "PRP VBP NN"
-	try:
-		while n < 10:
-			ss = sent.split()
-			for tag in ss:
-				new_word = conditionalProbs[prev_word].get().word
-				while new_word not in typeWordDict[tag]:
-					new_word = conditionalProbs[prev_word].get_nowait().word
-				string += " " + new_word 
-				prev_word = new_word
-			sent = sentenceStrctureProbs[sent].get_nowait().word
-			string += "\n"
-			n += 1
-	except:
-		print string
-		exit(1)
-	print string
+	conditionalProbs = ConditionalProbabilities.getProbabilities(unigrams, bigrams) #Get conditional probs for words
+	print_song(conditionalProbs, typeWordDict, sentenceStrctureProbs) #test
 main()
 
 

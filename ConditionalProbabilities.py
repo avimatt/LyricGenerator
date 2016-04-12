@@ -68,33 +68,33 @@ def getProbabilities(unigrams, bigrams):
 '''**************************
 	 Start Main Function
 **************************'''
+def CPmain():
+	# Key = Word Unigram
+	# Value = Word Unigram Frequency
+	unigrams = {}
+	# Key = Word Bigram
+	# Value = Word Bigram Frequency
+	bigrams = {}
+	# Key = Word Unigram 1
+	# Value = Priority Queue Q (Highest Probability at the top)
+	# 	- Get Highest Probability: conditionalProbs[key].get().word
+	conditionalProbs = {}
 
-# Key = Word Unigram
-# Value = Word Unigram Frequency
-unigrams = {}
-# Key = Word Bigram
-# Value = Word Bigram Frequency
-bigrams = {}
-# Key = Word Unigram 1
-# Value = Priority Queue Q (Highest Probability at the top)
-# 	- Get Highest Probability: conditionalProbs[key].get().word
-conditionalProbs = {}
+	directory = sys.argv[1]
 
-directory = sys.argv[1]
+	unigrams, bigrams = getCounts(directory)
 
-unigrams, bigrams = getCounts(directory)
+	conditionalProbs = getProbabilities(unigrams, bigrams)
 
-conditionalProbs = getProbabilities(unigrams, bigrams)
-
-# Test 
-n = 0
-string = ""
-prev_word = "<start>"
-while n < 60:
-	new_word = conditionalProbs[prev_word].get().word
-	while new_word not in conditionalProbs:
+	# Test 
+	n = 0
+	string = ""
+	prev_word = "<start>"
+	while n < 60:
 		new_word = conditionalProbs[prev_word].get().word
-	string += " " + new_word
-	prev_word = new_word
-	n += 1
-print string
+		while new_word not in conditionalProbs:
+			new_word = conditionalProbs[prev_word].get().word
+		string += " " + new_word
+		prev_word = new_word
+		n += 1
+	print string

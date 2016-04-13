@@ -23,9 +23,9 @@ def getProbabilities(unigrams, bigrams):
 		first_word, second_word = bigram.split(" ")
 		prob = bigrams[bigram]/float(unigrams[first_word])
 		# Add a priority queue to the dict
-		conditionalProbs.setdefault(first_word, Q.PriorityQueue())
+		conditionalProbs.setdefault(first_word, [])
 		# Add calculated element to the queue
-		conditionalProbs[first_word].put(WordProb(prob, second_word))
+		conditionalProbs[first_word].append(WordProb(prob, second_word))
 
 	return conditionalProbs
 
@@ -40,3 +40,8 @@ def createSentenceProbs(sentenceStructures, sentenceStrctureBigram):
 		probs.setdefault(prevBi, Q.PriorityQueue())
 		probs[prevBi].put(WordProb(curProb, curBi))
 	return probs
+
+def sortConditionalProbs(conditionalProbs):
+	for key in conditionalProbs:
+		sort_list = conditionalProbs[key]
+		conditionalProbs[key] = sorted(sort_list, key=lambda x: x.probability, reverse=True)

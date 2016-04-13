@@ -24,9 +24,20 @@ def generateSong(conditionalProbs, sentenceStrctureProbs, typeWordDict):
 			typestring += sent + "\n"
 			ss = sent.split()
 			for tag in ss:
-				new_word = conditionalProbs[prev_word].get().word
-				while new_word not in typeWordDict[tag]:
-					new_word = conditionalProbs[prev_word].get_nowait().word
+				wordObject = conditionalProbs[prev_word].pop(0)
+				new_word = wordObject.word
+				conditionalProbs[prev_word].append(wordObject)
+				i = 0
+				while (new_word not in typeWordDict[tag]) and (i < len(conditionalProbs[prev_word])):
+					wordObject = conditionalProbs[prev_word].pop(0)
+					new_word = wordObject.word
+					conditionalProbs[prev_word].append(wordObject)
+					i += 1
+				if i >= len(conditionalProbs[prev_word]):
+					# sterling function
+					string += "->"
+					new_word = "is"
+					i = 0
 				string += " " + new_word 
 				prev_word = new_word
 			sent = sentenceStrctureProbs[sent].get_nowait().word
@@ -56,7 +67,8 @@ def trainSystem(directory, unigrams, bigrams, twd, ss, ssb):
 
 	# Get Conditional Probabilities
 	sentenceStructureProbs = CP.createSentenceProbs(ss, ssb)
-	wordConditionalProbs = CP.getProbabilities(unigrams, bigrams) #Get conditional probs for words
+	wordConditionalProbs = CP.getProbabilities(unigrams, bigrams) 
+	CP.sortConditionalProbs(wordConditionalProbs)
 
 	return wordConditionalProbs, sentenceStructureProbs
 

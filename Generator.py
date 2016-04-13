@@ -11,24 +11,16 @@ try:
 except:
 	import queue as Q
 
-
-class WordProb(object):
-    def __init__(self, probability, word):
-        self.probability = probability
-        self.word = word
-        return
-    def __cmp__(self, other):
-        return -1 * cmp(self.probability, other.probability)
-
 def generateSong(conditionalProbs, sentenceStrctureProbs, typeWordDict):
 	print "----------"
-	n = 0
+	numLines = 10
+	curLine = 0
 	string = ""
 	typestring = ""
 	prev_word = "<start>"
 	sent = "PRP VBP NN"
 	try:
-		while n < 10:
+		while curLine < numLines:
 			typestring += sent + "\n"
 			ss = sent.split()
 			for tag in ss:
@@ -39,7 +31,7 @@ def generateSong(conditionalProbs, sentenceStrctureProbs, typeWordDict):
 				prev_word = new_word
 			sent = sentenceStrctureProbs[sent].get_nowait().word
 			string += "\n"
-			n += 1
+			curLine += 1
 	except:
 		print string
 		print typestring

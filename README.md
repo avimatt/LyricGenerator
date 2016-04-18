@@ -2,16 +2,14 @@
 
 Every musical artist has a unique style that permeates through their music. The content of their songs often evolves over the course of their career but the original voice is always present. Our goal for this project is to dive into the heart of the artist and see if we are able to bring this voice out. The concrete task we are going to achieve is given a seed set of words, can we construct a new and original song in an artist’s style.
 
-CC: conjunction, coordinating
-    & 'n and both but either et for less minus neither nor or plus so
-    therefore times v. versus vs. whether yet
-CD: numeral, cardinal
-    mid-1890 nine-thirty forty-two one-tenth ten million 0.5 one forty-
-    seven 1987 twenty '79 zero two 78-degrees eighty-four IX '60s .025
-    fifteen 271,124 dozen quintillion DM2,000 ...
-DT: determiner
-    all an another any both del each either every half la many much nary
-    neither no some such that the them these this those
+###### Parts of speech acronyms and explanations
+
+**CC:** conjunction, coordinating 
+> *& 'n and both but either et for less minus neither nor or plus so therefore times v. versus vs. whether yet*
+**CD:** numeral, cardinal
+> *mid-1890 nine-thirty forty-two one-tenth ten million 0.5 one forty-seven 1987 twenty '79 zero two 78-degrees eighty-four IX '60s .025 fifteen 271,124 dozen quintillion DM2,000 ...*
+**DT:** determiner
+> *all an another any both del each either every half la many much nary neither no some such that the them these this* those
 EX: existential there
     there
 FW: foreign word

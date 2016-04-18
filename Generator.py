@@ -3,9 +3,10 @@ To run script: python Generator.py [path to folder of song files]
 Song folders currently in google drive that Avi shared
 """
 
-import os, sys, string, operator, random
+import os, sys, string, operator, random, re
 import ConditionalProbabilities as CP
 import Train as T
+import textrank as tr
 try:
 	import Queue as Q
 except:
@@ -52,6 +53,7 @@ def generateSong(conditionalProbs, sentenceStrctureProbs, typeWordDict):
 	print typestring
 
 def trainSystem(directory, unigrams, bigrams, twd, ss, ssb):
+	allText = ""
 	for filename in os.listdir(directory):
 		if filename.startswith("."):
 			continue
@@ -59,12 +61,18 @@ def trainSystem(directory, unigrams, bigrams, twd, ss, ssb):
 		# Open File and get the Text
 		infile = open(directory + filename)
 		filetext = infile.read()
-
-		lines = filetext.split("\n")
-
+		filetext = re.sub("_"," ",filetext)
+		allText += re.sub("\n", ". ", filetext) + " "
 		T.trainGrams(lines, unigrams, bigrams)
 		T.trainStructures(lines, twd, ss, ssb)
-
+	keywords = tr.main(allText)
+	aKeywords = []
+	for key in keywords:
+		aKeywords.append(key.encode('ascii', 'ignore'))
+	print aKeywords
+	exit(1)
+	#sorted_keywords = sorted(keywords.items(), key=operator.itemgetter(1))
+	#print sorted_keywords
 	# Get Conditional Probabilities
 	sentenceStructureProbs = CP.createSentenceProbs(ss, ssb)
 	wordConditionalProbs = CP.getProbabilities(unigrams, bigrams) 

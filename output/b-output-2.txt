@@ -1,8 +1,13 @@
 ----------
 It's been a hard day's night
- you know wuwuwugod
+ sleep tight then
+ I want to me
+ to be the
+ sun is all
+ the day
+ I
+ love you
+ know that
+ you can I know you want you see you do
+ do you
 
-PRP VBP NN
-VB RP DT NN
-
-exit in exception: <type 'exceptions.KeyError'>

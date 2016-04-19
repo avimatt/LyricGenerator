@@ -1,0 +1,22 @@
+----------
+I read the news today, oh boy
+-> yourself home everything
+-> paperback-> down the sun
+ yeah yeh yeh
+ yeh yeh yeh
+-> the same
+-> yeah
+ Please please
+-> Well baby
+ you know wuwuwu
+PRP VBP NN
+VB RP DT NN
+PRP VBP NN
+PRP VBP NN
+DT JJ
+UH
+NNP NN
+NNP NN
+PRP VBP VB WRB PRP VBP JJ PRP VBP NNS
+
+exit in exception: <type 'exceptions.KeyError'>

@@ -1,5 +1,5 @@
 """
-To run script: python Generator.py "seed_sent" [path to folder of song files] [path to most important words]
+To run script: python Generator.py "seed_sent" [path to folder of song files] [path to most important words]|NONE
 Song folders currently in google drive that Avi shared
 """
 
@@ -26,20 +26,26 @@ def generateSong(seed, conditionalProbs, sentenceStrctureProbs, typeWordDict, ta
 		while curLine < numLines:
 			typestring += sent + "\n"
 			ss = sent.split()
+			# Loops over a line
 			for tag in ss:
+				# Get the next word
 				wordObject = conditionalProbs[prev_word].pop(0)
 				new_word = wordObject.word
 				conditionalProbs[prev_word].append(wordObject)
+				# Make sure that the next word is of the correct POS and has possible next words
 				i = 0
-				while (new_word not in typeWordDict[tag]) and (i < len(conditionalProbs[prev_word])):
+				while (new_word not in typeWordDict[tag]) and (new_word not in conditionalProbs) and (i < len(conditionalProbs[prev_word])):
 					wordObject = conditionalProbs[prev_word].pop(0)
 					new_word = wordObject.word
 					conditionalProbs[prev_word].append(wordObject)
 					i += 1
+				# If could not find a probable next word of correct POS
 				if i >= len(conditionalProbs[prev_word]):
-					string += "->"
+					# If there is a good textRank value use it other use the most popular word for the POS
 					new_word = tagToWordImp[tag] if tagToWordImp[tag] in conditionalProbs else tagToWord[tag]
 					i = 0
+
+				# Add the word to the lyrics
 				string += " " + new_word 
 				prev_word = new_word
 			sent = sentenceStrctureProbs[sent].get_nowait().word
@@ -51,14 +57,13 @@ def generateSong(seed, conditionalProbs, sentenceStrctureProbs, typeWordDict, ta
 		print "exit in exception:", sys.exc_info()[0]
 		exit(1)
 	print string
-	print typestring
+	# print typestring
 
 def trainSystem(directory, unigrams, bigrams, twd, ss, ssb, akw, flag):
 	allText = ""
 	for filename in os.listdir(directory):
-		if filename.startswith("."):
+		if filename.startswith(".") or filename.startswith("_"):
 			continue
-
 		# Open File and get the Text
 		infile = open(directory + filename)
 		filetext = infile.read()
@@ -69,11 +74,17 @@ def trainSystem(directory, unigrams, bigrams, twd, ss, ssb, akw, flag):
 
 		T.trainGrams(lines, unigrams, bigrams)
 		T.trainStructures(lines, twd, ss, ssb)
+	# Get TextRank Keywords
 	if flag:
 		keywords = tr.main(allText)
 		for key in keywords:
 			akw.append(key.encode('ascii', 'ignore'))
 
+		'''
+		# Uncomment to use for making a most important words file
+		for word in akw:
+			print word
+		exit(1)'''
 	# Get Conditional Probabilities
 	sentenceStructureProbs = CP.createSentenceProbs(ss, ssb)
 	wordConditionalProbs = CP.getProbabilities(unigrams, bigrams) 
@@ -157,4 +168,5 @@ def getKeywordsForTag(keywords, tagToWord):
 				break
 
 	return tagToWordImp
+
 main()

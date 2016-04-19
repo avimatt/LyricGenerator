@@ -54,6 +54,7 @@ def getFirstPrevWord(seedLine, conditionalProbs):
 	for word in seedList:
 		if word in conditionalProbs:
 			return word
+	return "<start>"
 
 def getFirstSentStructure(seedStruct, sentenceStrctureProbs):
 	if seedStruct in sentenceStrctureProbs:

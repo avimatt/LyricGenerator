@@ -12,6 +12,30 @@ try:
 except:
 	import queue as Q
 
+def getFirstPrevWord(seedLine, conditionalProbs):
+	seedList = seedLine.split(" ")
+	seedList.reverse()
+	for word in seedList:
+		if word in conditionalProbs:
+			return word
+	return "<start>"
+
+def getFirstSentStructure(seedStruct, sentenceStrctureProbs):
+	if seedStruct in sentenceStrctureProbs:
+		return seedStruct
+	else:
+		return "PRP VBP NN"
+
+def getLineTag(line):
+	taggedLineString = ""
+
+	tagged = nltk.pos_tag(nltk.word_tokenize(line))
+	for pair in tagged:
+		if len(pair) == 2:
+			(word, tag) = pair
+			taggedLineString += tag + " "
+	return taggedLineString[:-1]
+
 def generateSong(seed, conditionalProbs, sentenceStrctureProbs, typeWordDict, tagToWord, tagToWordImp):
 	print "----------"
 	print seed
@@ -19,9 +43,9 @@ def generateSong(seed, conditionalProbs, sentenceStrctureProbs, typeWordDict, ta
 	curLine = 0
 	string = ""
 	typestring = ""
-	seedStruct = CP.getLineTag(seed)
-	prev_word = CP.getFirstPrevWord(seed, conditionalProbs)
-	sent = CP.getFirstSentStructure(seedStruct, sentenceStrctureProbs)
+	seedStruct = getLineTag(seed)
+	prev_word = getFirstPrevWord(seed, conditionalProbs)
+	sent = getFirstSentStructure(seedStruct, sentenceStrctureProbs)
 	try:
 		while curLine < numLines:
 			typestring += sent + "\n"
@@ -80,8 +104,7 @@ def trainSystem(directory, unigrams, bigrams, twd, ss, ssb, akw, flag):
 		for key in keywords:
 			akw.append(key.encode('ascii', 'ignore'))
 
-		'''
-		# Uncomment to use for making a most important words file
+		'''# Uncomment to use for making a most important words file
 		for word in akw:
 			print word
 		exit(1)'''
@@ -137,36 +160,12 @@ def main():
 	flag = True if keywordsPath == "NONE" else False
 	# Train on the data
 	wordConditionalProbs, sentenceStructureProbs, keywords = trainSystem(directory, unigrams, bigrams, typeWordDict, sentenceStructures, sentenceStrctureBigram, keywords, flag)
-	tagToWord = CP.findMostPopPOS(typeWordDict, unigrams)	
+	tagToWord = T.findMostPopPOS(typeWordDict, unigrams)	
 	if not flag:
-		keywords = getListFromFile(keywordsPath)
-		tagToWordImp = getKeywordsForTag(keywords, tagToWord)
+		keywords = T.getListFromFile(keywordsPath)
+		tagToWordImp = T.getKeywordsForTag(keywords, tagToWord)
+
 	# Generate the song
 	generateSong(seed, wordConditionalProbs, sentenceStructureProbs, typeWordDict, tagToWord, tagToWordImp)
-
-def getListFromFile(path):
-	# Open File and get the Text
-	infile = open(path)
-	filetext = infile.read()
-	lines = filetext.split("\n")
-
-	keywords = []
-	for line in lines:
-		keywords.append(line)
-
-	return keywords
-
-def getKeywordsForTag(keywords, tagToWord):
-	tagged = nltk.pos_tag(keywords)
-	tagToWordImp = {}
-	for tag in tagToWord:
-		for pair in tagged:
-			tagToWordImp[tag] = tagToWord[tag]
-			(word, wordTag) = pair
-			if wordTag == tag:
-				tagToWordImp[tag] = word
-				break
-
-	return tagToWordImp
 
 main()

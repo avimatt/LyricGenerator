@@ -45,38 +45,3 @@ def sortConditionalProbs(conditionalProbs):
 	for key in conditionalProbs:
 		sort_list = conditionalProbs[key]
 		conditionalProbs[key] = sorted(sort_list, key=lambda x: x.probability, reverse=True)
-
-''' TO BE MOVED '''
-
-def getFirstPrevWord(seedLine, conditionalProbs):
-	seedList = seedLine.split(" ")
-	seedList.reverse()
-	for word in seedList:
-		if word in conditionalProbs:
-			return word
-	return "<start>"
-
-def getFirstSentStructure(seedStruct, sentenceStrctureProbs):
-	if seedStruct in sentenceStrctureProbs:
-		return seedStruct
-	else:
-		return "PRP VBP NN"
-
-def getLineTag(line):
-	taggedLineString = ""
-
-	tagged = nltk.pos_tag(nltk.word_tokenize(line))
-	for pair in tagged:
-		if len(pair) == 2:
-			(word, tag) = pair
-			taggedLineString += tag + " "
-	return taggedLineString[:-1]
-
-def findMostPopPOS(typeWordDict, unigrams):
-	tagToWord = {}
-	for tag in typeWordDict:
-		for unigram in sorted(unigrams, key=unigrams.get, reverse=True):
-			if unigram in typeWordDict[tag]:
-				tagToWord[tag] = unigram
-				break
-	return tagToWord

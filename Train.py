@@ -54,3 +54,37 @@ def trainStructures(lines, typeWordDict, sentenceStructures, sentenceStrctureBig
 		sentenceStrctureBigram.setdefault(sentBigram,0)
 		sentenceStrctureBigram[sentBigram] += 1
 		lastLineStrcut = lineStructure
+
+def findMostPopPOS(typeWordDict, unigrams):
+	tagToWord = {}
+	for tag in typeWordDict:
+		for unigram in sorted(unigrams, key=unigrams.get, reverse=True):
+			if unigram in typeWordDict[tag]:
+				tagToWord[tag] = unigram
+				break
+	return tagToWord
+
+def getListFromFile(path):
+	# Open File and get the Text
+	infile = open(path)
+	filetext = infile.read()
+	lines = filetext.split("\n")
+
+	keywords = []
+	for line in lines:
+		keywords.append(line)
+
+	return keywords
+
+def getKeywordsForTag(keywords, tagToWord):
+	tagged = nltk.pos_tag(keywords)
+	tagToWordImp = {}
+	for tag in tagToWord:
+		for pair in tagged:
+			tagToWordImp[tag] = tagToWord[tag]
+			(word, wordTag) = pair
+			if wordTag == tag:
+				tagToWordImp[tag] = word
+				break
+
+	return tagToWordImp

@@ -22,15 +22,23 @@ python Generator.py "Hey Hey momma said the way you move" BobMarleyLyrics/ NONE
 ```
 
 The lyrics files themselves should be formatted as such:
+
 name_of_song
 
 line 1
+
 line 2
+
 line 3
+
 ...
+
 ...
+
 ...
+
 last line
+
 
 ### Credits
 

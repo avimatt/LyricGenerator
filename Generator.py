@@ -102,7 +102,8 @@ def trainSystem(directory, unigrams, bigrams, twd, ss, ssb, akw, flag):
 	if flag:
 		keywords = tr.main(allText)
 		for key in keywords:
-			akw.append(key.encode('ascii', 'ignore'))
+			if " " not in key.encode('ascii', 'ignore'):
+				akw.append(key.encode('ascii', 'ignore'))
 
 		'''# Uncomment to use for making a most important words file
 		for word in akw:
